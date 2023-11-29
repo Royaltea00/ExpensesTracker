@@ -1,0 +1,47 @@
+{% extends 'main/../base.html' %}
+{% load static %}
+
+{% block title %}Expense Tracker{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>Welcome to the Expense Tracker!</h2>
+        <p>Track your expenses, manage your budget, and gain insights into your spending habits.</p>
+
+        {% if user.is_authenticated %}
+            <p>Hello, {{ user.username }}!</p>
+            <p>Get started by adding your expenses and categorizing them. You can also view monthly summaries and check
+                your user dashboard for insights.</p>
+        {% else %}
+            <p>Log in to start tracking your expenses and managing your budget. If you don't have an account, you can <a
+                    href="{% url 'signup' %}">sign up here</a>.</p>
+
+            <!-- Login Form -->
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Login</button>
+            </form>
+        {% endif %}
+
+        <div class="cta-buttons">
+            <div><a href="{% url 'add_expense' %}" class="btn btn-primary">Add Expense</a></div>
+            <br>
+            <div><a href="{% url 'add_category' %}" class="btn btn-primary">Add Category</a></div>
+            <br>
+            <div><a href="{% url 'daily_summary' %}" class="btn btn-secondary">View Daily Summary</a></div>
+            <br>
+            <div><a href="{% url 'weekly_summary' %}" class="btn btn-secondary">View Weekly Summary</a></div>
+            <br>
+            <div><a href="{% url 'monthly_summary' %}" class="btn btn-secondary">View Monthly Summary</a></div>
+            <br>
+            <div><a href="{% url 'yearly_summary' %}" class="btn btn-secondary">View Yearly Summary</a></div>
+            <br>
+            <div><a href="{% url 'user_dashboard' %}" class="btn btn-info">User Dashboard</a></div>
+            <br>
+            <div><a href="{% url 'user_profile' %}" class="btn btn-info">User Profile</a></div>
+            <br>
+
+        </div>
+    </div>
+{% endblock %}

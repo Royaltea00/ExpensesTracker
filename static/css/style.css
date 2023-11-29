@@ -1,0 +1,41 @@
+body {
+    background-color: #1a1a1a; /* Dark background color */
+    color: #fff; /* Text color */
+}
+
+h1 {
+    color: #ffcc00; /* Warm color for heading */
+}
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    color: #ffcc00; /* Warm color for form labels */
+}
+
+input[type="text"], select {
+    background-color: #333; /* Dark background color for input fields */
+    color: #fff; /* Text color for input fields */
+}
+
+button {
+    background-color: #ffcc00; /* Warm color for buttons */
+    color: #1a1a1a; /* Dark text color for buttons */
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e5ac00; /* Slightly lighter color on hover */
+}
+
+a {
+    color: #ffcc00; /* Warm color for links */
+}
+
+a:hover {
+    color: #e5ac00; /* Slightly lighter color on hover */
+}

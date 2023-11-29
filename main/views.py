@@ -1,17 +1,33 @@
+# main/views.py
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.views import LoginView
+from django.db.models import Sum
+from django.db.models.functions import ExtractMonth, ExtractWeek, ExtractDay, ExtractYear 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponseForbidden
+from .models import Expense, Category, UserProfile
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
 
-from main.models import Expense, Category
+from .app_forms import ExpenseForm, CategoryForm, UserProfileForm, ChangePasswordForm
 
 
-# Create your views here.
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+
+
 @login_required
 def home(request):
-    expenses = Expense.objects.filter(user=request.user)
-    categories = Category.objects.all()
-    return render(request, 'home.html', {'expenses': expenses, 'categories': categories})
+    if request.user.is_authenticated:
+        expenses = Expense.objects.filter(user=request.user)
+        categories = Category.objects.filter(user=request.user)
+        return render(request, 'main/home.html', {'expenses': expenses, 'categories': categories})
+    else:
+        messages.error(request, 'You must be logged in to view this page.')
+        return HttpResponseForbidden('You must be logged in to view this page.')
 
 
 @login_required
@@ -19,55 +35,67 @@ def add_expense(request):
     if request.method == 'POST':
         form = ExpenseForm(request.POST)
         if form.is_valid():
-            form.instance.user = request.user
-            form.save()
-            messages.success(request, 'Expense added successfully!')
+            expense = form.save(commit=False)
+            expense.user = request.user
+            expense.save()
+            messages.success(request, 'Expense added successfully.')
             return redirect('home')
     else:
         form = ExpenseForm()
-
-    return render(request, 'add_expense.html', {'form': form})
+    return render(request, 'main/add_expense.html', {'form': form})
 
 
 @login_required
 def view_expense(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id, user=request.user)
-    return render(request, 'view_expense.html', {'expense': expense})
+    context = {'expense': expense}
+    return render(request, 'main/view_expense.html', context)
 
 
 @login_required
 def edit_expense(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id, user=request.user)
-
     if request.method == 'POST':
         form = ExpenseForm(request.POST, instance=expense)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Expense edited successfully!')
+            messages.success(request, 'Expense updated successfully.')
             return redirect('home')
     else:
         form = ExpenseForm(instance=expense)
-
-    return render(request, 'edit_expense.html', {'form': form, 'expense': expense})
+    return render(request, 'main/edit_expense.html', {'form': form, 'expense': expense})
 
 
 @login_required
 def delete_expense(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id, user=request.user)
-
     if request.method == 'POST':
         expense.delete()
-        messages.success(request, 'Expense deleted successfully!')
+        messages.success(request, 'Expense deleted successfully.')
         return redirect('home')
-
-    return render(request, 'delete_expense.html', {'expense': expense})
+    return render(request, 'main/delete_expense.html', {'expense': expense})
 
 
 @login_required
 def monthly_summary(request):
-    current_month_expenses = Expense.objects.filter(user=request.user, date__month__exact=1)
+    monthly_data = Expense.objects.filter(user=request.user).annotate(
+        month=ExtractMonth('date')
+    ).values('month').annotate(total_amount=Sum('amount')).order_by('month')
 
-    return render(request, 'monthly_summary.html', {'current_month_expenses': current_month_expenses})
+    print("Monthly Data:", monthly_data)
+
+    return render(request, 'main/monthly_summary.html', {'monthly_data': monthly_data})
+
+
+@login_required
+def weekly_summary(request):
+    weekly_data = Expense.objects.filter(user=request.user).annotate(
+        week=ExtractWeek('date')
+    ).values('week').annotate(total_amount=Sum('amount')).order_by('week')
+
+    print("Weekly Data:", weekly_data)
+
+    return render(request, 'main/weekly_summary.html', {'weekly_data': weekly_data})
 
 
 @login_required
@@ -75,74 +103,77 @@ def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Category added successfully!')
+            category = form.save(commit=False)
+            category.user = request.user
+            category.save()
+            messages.success(request, 'Category added successfully.')
             return redirect('home')
     else:
         form = CategoryForm()
+    return render(request, 'main/add_category.html', {'form': form})
 
-    return render(request, 'add_category.html', {'form': form})
 
-
-@login_required
-def edit_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-
-    if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Category edited successfully!')
-            return redirect('home')
-    else:
-        form = CategoryForm(instance=category)
-
-    return render(request, 'edit_category.html', {'form': form, 'category': category})
+# @login_required
+# def edit_category(request, category_id):
+#     category = get_object_or_404(Category, id=category_id, user=request.user)
+#     if request.method == 'POST':
+#         form = CategoryForm(request.POST, instance=category)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Category updated successfully.')
+#             return redirect('home')
+#     else:
+#         form = CategoryForm(instance=category)
+#     return render(request, 'main/edit_category.html', {'form': form, 'category': category})
 
 
 @login_required
 def delete_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-
+    category = get_object_or_404(Category, id=category_id, user=request.user)
     if request.method == 'POST':
         category.delete()
-        messages.success(request, 'Category deleted successfully!')
+        messages.success(request, 'Category deleted successfully.')
         return redirect('home')
-
-    return render(request, 'delete_category.html', {'category': category})
+    return render(request, 'main/delete_category.html', {'category': category})
 
 
 @login_required
 def user_dashboard(request):
-    total_expenses = Expense.objects.filter(user=request.user).count()
-    total_categories = Category.objects.count()
-
-    return render(request, 'user_dashboard.html',
-                  {'total_expenses': total_expenses, 'total_categories': total_categories})
+    user_expenses = Expense.objects.filter(user=request.user)
+    total_expenses = user_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
+    expense_count = user_expenses.count()
+    context = {
+        'total_expenses': total_expenses,
+        'expense_count': expense_count,
+        'user_expenses': user_expenses,
+    }
+    return render(request, 'main/user_dashboard.html', context)
 
 
 @login_required
-def user_profile(request):
-    user_expenses = Expense.objects.filter(user=request.user)
-    user_categories = Category.objects.filter(expense__user=request.user).distinct()
-
-    return render(request, 'user_profile.html', {'user_expenses': user_expenses, 'user_categories': user_categories})
-
-
-def user_login(request):
+def edit_profile(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('user_profile')
+    else:
+        form = UserProfileForm(instance=request.user.userprofile)
+    return render(request, 'main/edit_profile.html', {'form': form})
 
-        if user is not None:
-            login(request, user)
-            messages.success(request, 'Login successful!')
-            return redirect('home')
-        else:
-            messages.error(request, 'Invalid login credentials. Please try again.')
 
-        return render(request, 'login.html')
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Password changed successfully.')
+            return redirect('user_profile')
+    else:
+        form = ChangePasswordForm()
+    return render(request, 'main/change_password.html', {'form': form})
 
 
 @login_required
@@ -150,3 +181,63 @@ def user_logout(request):
     logout(request)
     messages.success(request, 'Logout successful!')
     return redirect('login')
+
+
+@login_required
+def user_profile(request):
+    user = request.user
+    try:
+        user_profile = user.userprofile
+    except UserProfile.DoesNotExist:
+        # Create UserProfile for the user if it doesn't exist
+        UserProfile.objects.create(user=user)
+        user_profile = user.userprofile
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('user_profile')
+        else:
+            messages.error(request, 'There was an error updating your profile. Please correct the errors below.')
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'main/user_profile.html', {'form': form})
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Create UserProfile for the new user
+            UserProfile.objects.create(user=user)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+@login_required
+def daily_summary(request):
+    daily_data = Expense.objects.filter(user=request.user).annotate(
+        day=ExtractDay('date')
+    ).values('day').annotate(total_amount=Sum('amount')).order_by('day')
+
+    print("Daily Data:", daily_data)
+
+    return render(request, 'main/daily_summary.html', {'daily_data': daily_data})
+
+
+@login_required
+def yearly_summary(request):
+    yearly_data = Expense.objects.filter(user=request.user).annotate(
+        year=ExtractYear('date')
+    ).values('year').annotate(total_amount=Sum('amount')).order_by('year')
+
+    print("Yearly Data:", yearly_data)
+
+    return render(request, 'main/yearly_summary.html', {'yearly_data': yearly_data})

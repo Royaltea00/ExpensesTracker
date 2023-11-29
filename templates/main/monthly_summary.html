@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Monthly Expense Summary{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Monthly Expense Summary</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in monthly_data %}
+          <tr>
+            <td>{{ entry.month }}</td>
+            <td>${{ entry.total_amount }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

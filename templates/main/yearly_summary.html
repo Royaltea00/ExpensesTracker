@@ -1,0 +1,26 @@
+{% extends 'main/../base.html' %}
+{% load static %}
+
+{% block title %}Yearly Expense Summary{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Yearly Expense Summary</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in yearly_data %}
+          <tr>
+            <td>{{ entry.year }}</td>
+            <td>${{ entry.total_amount }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'main/../base.html' %}
+{% load static %}
+
+{% block title %}Daily Expense Summary{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Daily Expense Summary</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in daily_data %}
+          <tr>
+            <td>{{ entry.day }}</td>
+            <td>${{ entry.total_amount }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

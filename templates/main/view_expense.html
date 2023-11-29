@@ -1,0 +1,34 @@
+{% extends 'main/../base.html' %}
+{% load static %}
+
+{% block title %}View Expense{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Expense Details</h2>
+    <p><strong>Date:</strong> {{ expense.date }}</p>
+    <p><strong>Category:</strong> {{ expense.category }}</p>
+    <p><strong>Amount:</strong> ${{ expense.amount }}</p>
+    <p><strong>Description:</strong> {{ expense.description }}</p>
+
+    {% if expense.payment_method %}
+      <p><strong>Payment Method:</strong> {{ expense.payment_method }}</p>
+    {% endif %}
+
+    {% if expense.location %}
+      <p><strong>Location:</strong> {{ expense.location }}</p>
+    {% endif %}
+
+    {% if expense.is_recurring %}
+      <p><strong>Recurring Expense:</strong> Yes</p>
+    {% else %}
+      <p><strong>Recurring Expense:</strong> No</p>
+    {% endif %}
+
+
+    <div class="mt-4">
+      <a href="{% url 'edit_expense' expense.id %}" class="btn btn-primary">Edit Expense</a>
+      <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+  </div>
+{% endblock %}
