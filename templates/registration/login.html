@@ -7,7 +7,6 @@
         {{ form.as_p }}
         <a href="{% url 'home' %}" class="btn btn-secondary">Login</a>
     </form>
-    {# If user arrived at the login page via a protected view, include a link to go back to that view #}
     {% if request.GET.next %}
         <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a>.</p>
         <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset password</a>.</p>

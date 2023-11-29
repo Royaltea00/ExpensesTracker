@@ -1,16 +1,14 @@
-# main/views.py
-from django.contrib import messages
+# from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.views import LoginView
 from django.db.models import Sum
-from django.db.models.functions import ExtractMonth, ExtractWeek, ExtractDay, ExtractYear 
+from django.db.models.functions import ExtractMonth, ExtractWeek, ExtractDay, ExtractYear
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from .models import Expense, Category, UserProfile
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import views as auth_views
 
 from .app_forms import ExpenseForm, CategoryForm, UserProfileForm, ChangePasswordForm
 
@@ -111,20 +109,6 @@ def add_category(request):
     else:
         form = CategoryForm()
     return render(request, 'main/add_category.html', {'form': form})
-
-
-# @login_required
-# def edit_category(request, category_id):
-#     category = get_object_or_404(Category, id=category_id, user=request.user)
-#     if request.method == 'POST':
-#         form = CategoryForm(request.POST, instance=category)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Category updated successfully.')
-#             return redirect('home')
-#     else:
-#         form = CategoryForm(instance=category)
-#     return render(request, 'main/edit_category.html', {'form': form, 'category': category})
 
 
 @login_required

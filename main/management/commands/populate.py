@@ -1,5 +1,3 @@
-# main/management/commands/populate.py
-
 from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 from main.models import Expense, Category, WeeklySummary, MonthlySummary, DailySummary, YearlySummary
