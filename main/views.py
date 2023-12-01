@@ -80,9 +80,12 @@ def monthly_summary(request):
         month=ExtractMonth('date')
     ).values('month').annotate(total_amount=Sum('amount')).order_by('month')
 
+    # Calculate total_expenses
+    total_expenses = Expense.objects.filter(user=request.user).aggregate(total_expenses=Sum('amount'))['total_expenses'] or 0
+
     print("Monthly Data:", monthly_data)
 
-    return render(request, 'main/monthly_summary.html', {'monthly_data': monthly_data})
+    return render(request, 'main/monthly_summary.html', {'monthly_data': monthly_data, 'total_expenses': total_expenses})
 
 
 @login_required
@@ -91,10 +94,12 @@ def weekly_summary(request):
         week=ExtractWeek('date')
     ).values('week').annotate(total_amount=Sum('amount')).order_by('week')
 
+    # Calculate total_expenses
+    total_expenses = Expense.objects.filter(user=request.user).aggregate(total_expenses=Sum('amount'))['total_expenses'] or 0
+
     print("Weekly Data:", weekly_data)
 
-    return render(request, 'main/weekly_summary.html', {'weekly_data': weekly_data})
-
+    return render(request, 'main/weekly_summary.html', {'weekly_data': weekly_data, 'total_expenses': total_expenses})
 
 @login_required
 def add_category(request):
@@ -211,9 +216,13 @@ def daily_summary(request):
         day=ExtractDay('date')
     ).values('day').annotate(total_amount=Sum('amount')).order_by('day')
 
+    # Calculate total_expenses
+    total_expenses = Expense.objects.filter(user=request.user).aggregate(total_expenses=Sum('amount'))[
+                         'total_expenses'] or 0
+
     print("Daily Data:", daily_data)
 
-    return render(request, 'main/daily_summary.html', {'daily_data': daily_data})
+    return render(request, 'main/daily_summary.html', {'daily_data': daily_data, 'total_expenses': total_expenses})
 
 
 @login_required
@@ -222,6 +231,10 @@ def yearly_summary(request):
         year=ExtractYear('date')
     ).values('year').annotate(total_amount=Sum('amount')).order_by('year')
 
+    # Calculate total_expenses
+    total_expenses = Expense.objects.filter(user=request.user).aggregate(total_expenses=Sum('amount'))[
+                         'total_expenses'] or 0
+
     print("Yearly Data:", yearly_data)
 
-    return render(request, 'main/yearly_summary.html', {'yearly_data': yearly_data})
+    return render(request, 'main/yearly_summary.html', {'yearly_data': yearly_data, 'total_expenses': total_expenses})

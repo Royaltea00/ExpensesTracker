@@ -6,11 +6,36 @@
 {% block content %}
   <div class="container">
     <h2>Edit Profile</h2>
+    <p>Update your profile information below:</p>
+
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ form.as_p }}
+
+      <!-- Display form fields with labels -->
+      <div class="mb-3">
+        {{ form.first_name.label_tag }}
+        {{ form.first_name }}
+      </div>
+
+      <div class="mb-3">
+        {{ form.last_name.label_tag }}
+        {{ form.last_name }}
+      </div>
+
+      <div class="mb-3">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+      </div>
+
+      <div class="mb-3">
+        {{ form.profile_picture.label_tag }}
+        {{ form.profile_picture }}
+      </div>
+
       <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
+
+    <!-- Cancel button -->
     <a href="{% url 'user_profile' %}" class="btn btn-secondary mt-2">Cancel</a>
   </div>
 {% endblock %}

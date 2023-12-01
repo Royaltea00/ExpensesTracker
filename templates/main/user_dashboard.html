@@ -4,10 +4,30 @@
 {% block title %}User Dashboard{% endblock %}
 
 {% block content %}
-  <h2>User Dashboard</h2>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <h2>User Dashboard</h2>
 
-  <p>Total Expenses: {{ total_expenses }}</p>
-  <p>Total Categories: {{ total_categories }}</p>
+        <p>Welcome to your dashboard! Here's a summary of your expenses:</p>
 
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Total Expenses</h5>
+            <p class="card-text">You have spent a total of ${{ total_expenses }}.</p>
+          </div>
+        </div>
 
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title">Total Categories</h5>
+            <p class="card-text">You have expenses in {{ total_categories }} different categories.</p>
+          </div>
+        </div>
+
+        <!-- Add more cards or information based on your needs -->
+
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -8,18 +8,16 @@
     <form method="post" action="{% url 'add_expense' %}" class="mb-4">
         {% csrf_token %}
 
-
         <label for="category">Category:</label>
         <select name="category" id="category">
             <option value="1">Food</option>
             <option value="2">Utilities</option>
-            <option value="2">Housing</option>
-            <option value="2">Transportation</option>
-            <option value="2">Insurance</option>
-            <option value="2">Medical & Healthcare </option>
-            <option value="2">Saving, Investing, & Debt Payments</option>
-            <option value="2">Personal Spending</option>
-
+            <option value="3">Housing</option>
+            <option value="4">Transportation</option>
+            <option value="5">Insurance</option>
+            <option value="6">Medical & Healthcare </option>
+            <option value="7">Saving, Investing, & Debt Payments</option>
+            <option value="8">Personal Spending</option>
         </select><br><br>
 
         <label for="amount">Amount:</label>
@@ -30,7 +28,6 @@
 
         <label for="date">Date:</label>
         <input type="date" name="date" id="date" required><br><br>
-
 
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <h2>Login</h2>
-    <form method="post" action="{% url 'login' %}?next={{ request.GET.next }}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <a href="{% url 'home' %}" class="btn btn-secondary">Login</a>
-    </form>
-    {% if request.GET.next %}
-        <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a>.</p>
-        <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset password</a>.</p>
-    {% else %}
-        <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a>.</p>
-    {% endif %}
+    <div style="background-image: url('{% static "admin/images/home.jpg" %}'); background-size: cover; background-position: center; height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div style="background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; text-align: center;">
+            <h2>Login</h2>
+            <form method="post" action="{% url 'login' %}?next={{ request.GET.next }}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-secondary">Login</button>
+            </form>
+            {% if request.GET.next %}
+                <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a>.</p>
+                <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset password</a>.</p>
+            {% else %}
+                <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a>.</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
